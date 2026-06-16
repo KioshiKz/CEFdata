@@ -2,18 +2,10 @@ services:
   - type: web
     name: official-website
     runtime: node
-    plan: starter
+    plan: free
     buildCommand: npm install
     startCommand: npm start
     healthCheckPath: /api/health
     envVars:
       - key: NODE_ENV
         value: production
-      - key: APP_DATA_DIR
-        value: /var/data/data
-      - key: APP_STORAGE_DIR
-        value: /var/data/storage
-    disk:
-      name: official-website-data
-      mountPath: /var/data
-      sizeGB: 1
