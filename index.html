@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Қазақстан Республикасы - BIN іздеу жүйесі</title>
+    <link rel="stylesheet" href="src/css/main.css">
+</head>
+<body>
+    <header>
+        <div class="header-container">
+            <div>
+                <h1>ӨСКЕМЕН ЭКОНОМИКА ЖӘНЕ ТЕХНИКА КОЛЛЕДЖІ</h1>
+                <p class="subtitle">Өндірістік тәжірибеден өтуге арналған веб-сайт</p>
+            </div>
+            <div class="language-panel" aria-label="Тіл таңдау">
+                <button type="button" class="language-button active" data-lang="kk">KZ</button>
+                <button type="button" class="language-button" data-lang="ru">RU</button>
+            </div>
+        </div>
+    </header>
+
+    <nav>
+        <ul>
+            <li><a href="#login">Кіру</a></li>
+            <li class="admin-link" style="display: none;"><a href="#search">Іздеу</a></li>
+            <li class="admin-link" style="display: none;"><a href="#groups">Топтар тізімі</a></li>
+            <li><a href="#documents">Құжаттар қалтасы</a></li>
+            <li class="admin-link" style="display: none;"><a href="#adminPanel">Әкім панелі</a></li>
+            <li><a href="#partners">Әлеуметтік серіктестер</a></li>
+        </ul>
+    </nav>
+
+    <main>
+        <section id="login">
+            <h2>Сайтқа кіру</h2>
+            <p>Сайтқа кіру үшін төмендегі өрістерге пайдаланушы аты мен құпия сөзді енгізіңіз.</p>
+            <div class="login-form">
+                <input type="text" id="usernameInput" placeholder="Пайдаланушы аты">
+                <input type="password" id="passwordInput" placeholder="Құпия сөз">
+                <button type="button" class="login-button">Кіру</button>
+                <div id="loginError"></div>
+            </div>
+        </section>
+
+        <section id="mainContent" style="display: none;">
+            <section id="home">
+                <h2>Қош келдіңіз!</h2>
+                <p>Бұл сайтқа рұқсат алған қолданушылар кіре алады. Студенттер мұнда құжаттарды PDF форматында жүктей алады, ал әкім жүктелген құжаттарды тексеріп, есеп файлын тіркей алады.</p>
+            </section>
+
+            <section id="groups" style="display: none;">
+                <h2>Топтар тізімі</h2>
+                <p>Алдымен топтарды осы жерде қосыңыз. Әр топ жеке тізім болып шығады, ал ішіне кіргенде 5 практика түрі көрінеді.</p>
+                <div class="group-list-container">
+                    <ul id="groupList" class="group-list"></ul>
+                    <p id="noGroupsMessage" class="note">Әзірге топтар жоқ. Жаңа топ қосыңыз.</p>
+                </div>
+                <div class="group-form">
+                    <input type="text" id="newGroupName" placeholder="Топ атауы">
+                    <button type="button" class="add-group-button">Топ қосу</button>
+                </div>
+            </section>
+
+            <section id="search" style="display: none;">
+                <div class="search-box">
+                    <h2>BIN арқылы ұйымды табу</h2>
+                    <p>Ұйымның БИН кодын енгізіңіз:</p>
+                    <input type="text" id="binInput" placeholder="BIN коды">
+                    <button type="button" class="bin-search-button">Іздеу</button>
+                    <div id="result"></div>
+                </div>
+            </section>
+
+            <section id="documents" style="display: none;">
+                <div class="documents-box">
+                    <h2>Құжаттар қалтасы</h2>
+                    <p>Төмендегі шаблондарды жүктеп алып, толтырылған нұсқасын PDF форматында қайта жүктей аласыз.</p>
+                    <div>
+                        <h3>Шаблондар</h3>
+                        <ul class="document-list"></ul>
+                        <p class="note">Алдымен DOCX шаблонын жүктеп алыңыз, содан кейін толтырылған құжатты PDF ретінде қайта жүктеңіз.</p>
+                    </div>
+                </div>
+
+                <details class="upload-panel" id="uploadPanel">
+                    <summary class="upload-panel-toggle">
+                        <span class="upload-panel-title">Документтерді жүктеу</span>
+                        <span class="upload-panel-indicator">+</span>
+                    </summary>
+                    <div class="upload-panel-content">
+                        <p>Қажетті құжат түрін басыңыз, сонда өз компьютеріңіздегі файлдар ашылады. Сол жерден керек PDF документті таңдап жүктейсіз.</p>
+                        <div id="documentUploadList" class="document-upload-list"></div>
+                        <div id="documentsMessage" class="inline-message"></div>
+                    </div>
+                </details>
+
+                <div class="uploaded-files-box">
+                    <h4>Жүктелген файлдар</h4>
+                    <div id="studentUploadedFiles" class="student-uploaded-files"></div>
+                </div>
+            </section>
+
+            <section id="adminPanel" style="display: none;">
+                <h2>Әкім панелі</h2>
+                <p>Тізімнен топ пен практика түрін таңдаңыз. Таңдалған практика осында өңделеді.</p>
+                <div id="selectedPracticeInfo" class="selected-practice-info"></div>
+                <table class="group-table">
+                    <thead>
+                        <tr>
+                            <th>Топ атауы</th>
+                            <th>Практика түрі</th>
+                            <th>Басталуы</th>
+                            <th>Аяқталуы</th>
+                            <th>Сағат саны</th>
+                            <th>Іс-әрекет</th>
+                        </tr>
+                    </thead>
+                    <tbody id="groupTableBody"></tbody>
+                </table>
+                <p class="note">Жаңартылған мәндер серверге сақталады.</p>
+
+                <div class="admin-documents-section">
+                    <h3>Жүктелген PDF құжаттар</h3>
+                    <p>Әкім осы жерден студент жүктеген PDF құжаттарды қарап, статус қойып және тексеру есебін PDF түрінде тіркей алады.</p>
+                    <div id="adminDocumentsList" class="admin-documents-list"></div>
+                </div>
+            </section>
+
+            <section id="partners">
+                <h2>Әлеуметтік серіктестер</h2>
+                <p>Өндірістік тәжірибе мен оқу үдерісіне қатысты қысқаша мәлімет:</p>
+                <div class="partner-card">
+                    <h3>Өскемен экономика және техника колледжі</h3>
+                    <p><strong>Директоры:</strong> Нәбиев Ерсайын Ахметуәлиұлы</p>
+                    <p><strong>Мекенжайы:</strong> Өскемен қаласы, Бажова көшесі, 68</p>
+                    <p><strong>Қысқаша:</strong> 1943 жылы құрылған оқу орны. 2010 жылдан бастап Қазақстан-Американдық еркін университеті құрамында жұмыс істейді және экономикалық, техникалық бағыттар бойынша маман даярлайды.</p>
+                    <p><strong>Сайт:</strong> cef.kafu.kz</p>
+                </div>
+            </section>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2026 Қазақстан Республикасы. Барлық құқықтар қорғалған.</p>
+    </footer>
+
+    <script type="module" src="src/js/main.js"></script>
+</body>
+</html>

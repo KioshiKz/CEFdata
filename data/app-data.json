@@ -1,0 +1,41 @@
+{
+  "groups": [
+    {
+      "id": "grp_mqgwllhi_072cc8e0",
+      "name": "22ИС-21к",
+      "practices": {
+        "Өндірістік оқыту": {
+          "practiceType": "Өндірістік оқыту",
+          "startDate": "",
+          "endDate": "",
+          "hours": 0
+        },
+        "Өндірістік тәжірибе": {
+          "practiceType": "Өндірістік тәжірибе",
+          "startDate": "",
+          "endDate": "",
+          "hours": 0
+        },
+        "Диплом алды тәжірибе": {
+          "practiceType": "Диплом алды тәжірибе",
+          "startDate": "",
+          "endDate": "",
+          "hours": 0
+        },
+        "Дипломдық жоба": {
+          "practiceType": "Дипломдық жоба",
+          "startDate": "",
+          "endDate": "",
+          "hours": 0
+        },
+        "Оқу тәжірибесі": {
+          "practiceType": "Оқу тәжірибесі",
+          "startDate": "",
+          "endDate": "",
+          "hours": 0
+        }
+      }
+    }
+  ],
+  "submissions": []
+}
