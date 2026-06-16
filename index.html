@@ -25,6 +25,7 @@
             <li><a href="#login">Кіру</a></li>
             <li class="admin-link" style="display: none;"><a href="#search">Іздеу</a></li>
             <li class="admin-link" style="display: none;"><a href="#groups">Топтар тізімі</a></li>
+            <li class="admin-link" style="display: none;"><a href="#binRecords">BIN базасы</a></li>
             <li><a href="#documents">Құжаттар қалтасы</a></li>
             <li class="admin-link" style="display: none;"><a href="#adminPanel">Әкім панелі</a></li>
             <li><a href="#partners">Әлеуметтік серіктестер</a></li>
@@ -69,6 +70,44 @@
                     <input type="text" id="binInput" placeholder="BIN коды">
                     <button type="button" class="bin-search-button">Іздеу</button>
                     <div id="result"></div>
+                </div>
+            </section>
+
+            <section id="binRecords" style="display: none;">
+                <div class="bin-records-box">
+                    <h2>BIN базасы</h2>
+                    <p>Осы жерден ұйымдардың BIN кодтары мен сілтемелерін қосып, өңдей аласыз. Іздеу кезінде осы жазбалар бірінші тексеріледі.</p>
+
+                    <div class="bin-form">
+                        <h3 id="binFormTitle">Жаңа BIN жазбасын қосу</h3>
+                        <input type="text" id="binRecordBin" placeholder="BIN (мысалы: 123456789012)" inputmode="numeric">
+                        <input type="url" id="binRecordUrl" placeholder="Сілтеме (https://...)">
+                        <input type="text" id="binRecordName" placeholder="Ұйым атауы">
+                        <input type="text" id="binRecordAddress" placeholder="Мекенжайы">
+                        <input type="text" id="binRecordDirector" placeholder="Басшысы">
+                        <input type="text" id="binRecordRegion" placeholder="Өңірі">
+                        <div class="bin-form-actions">
+                            <button type="button" class="bin-save-button">Қосу</button>
+                            <button type="button" class="bin-cancel-button" style="display: none;">Бас тарту</button>
+                        </div>
+                        <div id="binRecordFormError" class="inline-message"></div>
+                    </div>
+
+                    <table class="bin-table">
+                        <thead>
+                            <tr>
+                                <th>BIN</th>
+                                <th>Сілтеме</th>
+                                <th>Атауы</th>
+                                <th>Мекенжайы</th>
+                                <th>Басшысы</th>
+                                <th>Өңірі</th>
+                                <th>Іс-әрекет</th>
+                            </tr>
+                        </thead>
+                        <tbody id="binRecordsTableBody"></tbody>
+                    </table>
+                    <p id="noBinRecordsMessage" class="note">Әзірге BIN жазбалары жоқ. Жаңа жазба қосыңыз.</p>
                 </div>
             </section>
 

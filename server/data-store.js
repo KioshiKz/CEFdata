@@ -13,7 +13,8 @@ const {
 
 const defaultData = {
     groups: [],
-    submissions: []
+    submissions: [],
+    binRecords: []
 };
 
 let dataPromise = null;
@@ -69,6 +70,21 @@ function normalizeSubmission(submission) {
         reviewReportFileName: submission.reviewReportFileName || "",
         submissionPath: submission.submissionPath || "",
         reportPath: submission.reportPath || ""
+    };
+}
+
+function normalizeBinRecord(record) {
+    const bin = String(record?.bin || "").replace(/\D/g, "");
+    return {
+        id: record?.id || createId("bin"),
+        bin,
+        url: String(record?.url || "").trim(),
+        name: String(record?.name || "").trim(),
+        address: String(record?.address || "").trim(),
+        director: String(record?.director || "").trim(),
+        region: String(record?.region || "").trim(),
+        createdAt: record?.createdAt || new Date().toISOString(),
+        updatedAt: record?.updatedAt || new Date().toISOString()
     };
 }
 
@@ -128,7 +144,8 @@ async function loadData() {
         const parsed = JSON.parse(raw);
         return {
             groups: Array.isArray(parsed.groups) ? parsed.groups.map(normalizeGroup) : [],
-            submissions: Array.isArray(parsed.submissions) ? parsed.submissions.map(normalizeSubmission) : []
+            submissions: Array.isArray(parsed.submissions) ? parsed.submissions.map(normalizeSubmission) : [],
+            binRecords: Array.isArray(parsed.binRecords) ? parsed.binRecords.map(normalizeBinRecord) : []
         };
     } catch (error) {
         if (error.code !== "ENOENT") {
@@ -354,15 +371,110 @@ async function getSubmissionFile(id, type) {
     };
 }
 
+function publicBinRecord(record) {
+    return {
+        id: record.id,
+        bin: record.bin,
+        url: record.url,
+        name: record.name,
+        address: record.address,
+        director: record.director,
+        region: record.region,
+        createdAt: record.createdAt,
+        updatedAt: record.updatedAt
+    };
+}
+
+async function listBinRecords() {
+    const data = await getData();
+    return data.binRecords.map(publicBinRecord);
+}
+
+async function addBinRecord(input) {
+    const data = await getData();
+    const record = normalizeBinRecord({
+        bin: input.bin,
+        url: input.url,
+        name: input.name,
+        address: input.address,
+        director: input.director,
+        region: input.region
+    });
+    record.createdAt = new Date().toISOString();
+    record.updatedAt = record.createdAt;
+    data.binRecords.push(record);
+    await saveData(data);
+    return publicBinRecord(record);
+}
+
+async function updateBinRecord(id, patch) {
+    const data = await getData();
+    const record = data.binRecords.find((item) => item.id === id);
+    if (!record) {
+        return null;
+    }
+
+    if (typeof patch.bin === "string") {
+        record.bin = patch.bin.replace(/\D/g, "");
+    }
+    if (typeof patch.url === "string") {
+        record.url = patch.url.trim();
+    }
+    if (typeof patch.name === "string") {
+        record.name = patch.name.trim();
+    }
+    if (typeof patch.address === "string") {
+        record.address = patch.address.trim();
+    }
+    if (typeof patch.director === "string") {
+        record.director = patch.director.trim();
+    }
+    if (typeof patch.region === "string") {
+        record.region = patch.region.trim();
+    }
+    record.updatedAt = new Date().toISOString();
+
+    await saveData(data);
+    return publicBinRecord(record);
+}
+
+async function deleteBinRecord(id) {
+    const data = await getData();
+    const initialLength = data.binRecords.length;
+    data.binRecords = data.binRecords.filter((item) => item.id !== id);
+    if (data.binRecords.length === initialLength) {
+        return false;
+    }
+    await saveData(data);
+    return true;
+}
+
+async function findBinRecord(bin) {
+    const data = await getData();
+    const record = data.binRecords.find((item) => item.bin === bin);
+    return record ? publicBinRecord(record) : null;
+}
+
+async function binRecordExists(bin, excludeId = null) {
+    const data = await getData();
+    return data.binRecords.some((item) => item.bin === bin && item.id !== excludeId);
+}
+
 module.exports = {
     addGroup,
+    addBinRecord,
     addSubmission,
     attachReport,
+    binRecordExists,
+    deleteBinRecord,
     deleteGroup,
     deleteSubmission,
+    findBinRecord,
     getSubmissionFile,
+    listBinRecords,
     listGroups,
     listSubmissions,
+    updateBinRecord,
     updateGroup,
     updatePractice,
     updateSubmission

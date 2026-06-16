@@ -37,5 +37,40 @@
       }
     }
   ],
-  "submissions": []
+  "submissions": [],
+  "binRecords": [
+    {
+      "id": "bin_mqh0uh6u_577f0d14",
+      "bin": "998877665544",
+      "url": "https://kafu.kz",
+      "name": "KAFU",
+      "address": "Ust-Kamenogorsk",
+      "director": "Smith",
+      "region": "VKO",
+      "createdAt": "2026-06-16T19:14:57.798Z",
+      "updatedAt": "2026-06-16T19:14:57.798Z"
+    },
+    {
+      "id": "bin_mqh151tp_02baf3fd",
+      "bin": "22222",
+      "url": "https://www.youtube.com/",
+      "name": "Ютуб",
+      "address": "22",
+      "director": "АА",
+      "region": "123",
+      "createdAt": "2026-06-16T19:23:11.102Z",
+      "updatedAt": "2026-06-16T19:23:11.102Z"
+    },
+    {
+      "id": "bin_mqh178k9_572a77be",
+      "bin": "11111111",
+      "url": "https://www.google.com/?hl=ru",
+      "name": "",
+      "address": "",
+      "director": "",
+      "region": "",
+      "createdAt": "2026-06-16T19:24:53.145Z",
+      "updatedAt": "2026-06-16T19:24:53.145Z"
+    }
+  ]
 }

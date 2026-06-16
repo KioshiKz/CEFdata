@@ -11,6 +11,7 @@ export const i18n = {
         logoutButton: "Шығу",
         navSearch: "Іздеу",
         navGroups: "Топтар тізімі",
+        navBinRecords: "BIN базасы",
         navDocuments: "Құжаттар қалтасы",
         navAdmin: "Әкім панелі",
         navPartners: "Әлеуметтік серіктестер",
@@ -30,6 +31,28 @@ export const i18n = {
         searchText: "Ұйымның БИН кодын енгізіңіз:",
         binPlaceholder: "BIN коды",
         searchButton: "Іздеу",
+        binRecordsTitle: "BIN базасы",
+        binRecordsText: "Осы жерден ұйымдардың BIN кодтары мен сілтемелерін қосып, өңдей аласыз. Іздеу кезінде осы жазбалар бірінші тексеріледі.",
+        binFormTitleCreate: "Жаңа BIN жазбасын қосу",
+        addBin: "Қосу",
+        editBin: "Өзгерту",
+        saveBin: "Сақтау",
+        cancelEdit: "Бас тарту",
+        binPlaceholder: "BIN (мысалы: 123456789012)",
+        binUrlPlaceholder: "Сілтеме (https://...)",
+        binNamePlaceholder: "Ұйым атауы",
+        binAddressPlaceholder: "Мекенжайы",
+        binDirectorPlaceholder: "Басшысы",
+        binRegionPlaceholder: "Өңірі",
+        noBinRecords: "Әзірге BIN жазбалары жоқ. Жаңа жазба қосыңыз.",
+        binRequired: "BIN кодын енгізіңіз.",
+        binDigitsOnly: "BIN тек цифрлардан тұруы тиіс.",
+        urlRequired: "Сілтемені міндетті түрде енгізіңіз.",
+        urlInvalid: "Сілтеме http:// немесе https:// арқылы басталуы тиіс.",
+        confirmDeleteBin: "Бұл BIN жазбасын жоюға сенімдісіз бе?",
+        loadFailed: "Жазбаларды жүктеу сәтсіз аяқталды.",
+        saveFailed: "Жазбаны сақтау сәтсіз аяқталды.",
+        deleteFailed: "Жазбаны жою сәтсіз аяқталды.",
         documentsTitle: "Құжаттар қалтасы",
         documentsText: "Төмендегі шаблондарды жүктеп алып, толтырылған нұсқасын PDF форматында қайта жүктей аласыз.",
         templates: "Шаблондар",
@@ -111,6 +134,7 @@ export const i18n = {
         logoutButton: "Выход",
         navSearch: "Поиск",
         navGroups: "Список групп",
+        navBinRecords: "База BIN",
         navDocuments: "Папка документов",
         navAdmin: "Панель администратора",
         navPartners: "Социальные партнеры",
@@ -130,6 +154,28 @@ export const i18n = {
         searchText: "Введите BIN организации:",
         binPlaceholder: "Код BIN",
         searchButton: "Поиск",
+        binRecordsTitle: "База BIN",
+        binRecordsText: "Здесь можно добавлять и редактировать BIN-коды организаций и ссылки на них. При поиске эти записи проверяются первыми.",
+        binFormTitleCreate: "Добавить новую запись BIN",
+        addBin: "Добавить",
+        editBin: "Изменить",
+        saveBin: "Сохранить",
+        cancelEdit: "Отмена",
+        binPlaceholder: "BIN (например: 123456789012)",
+        binUrlPlaceholder: "Ссылка (https://...)",
+        binNamePlaceholder: "Название организации",
+        binAddressPlaceholder: "Адрес",
+        binDirectorPlaceholder: "Руководитель",
+        binRegionPlaceholder: "Регион",
+        noBinRecords: "Пока записей BIN нет. Добавьте новую запись.",
+        binRequired: "Введите код BIN.",
+        binDigitsOnly: "BIN должен состоять только из цифр.",
+        urlRequired: "Ссылка обязательна для заполнения.",
+        urlInvalid: "Ссылка должна начинаться с http:// или https://.",
+        confirmDeleteBin: "Вы уверены, что хотите удалить эту запись BIN?",
+        loadFailed: "Не удалось загрузить записи.",
+        saveFailed: "Не удалось сохранить запись.",
+        deleteFailed: "Не удалось удалить запись.",
         documentsTitle: "Папка документов",
         documentsText: "Скачайте шаблоны ниже, заполните их и загрузите готовую версию в формате PDF.",
         templates: "Шаблоны",
@@ -290,7 +336,7 @@ export function applyStaticTranslations() {
     setText("header h1", tr("headerTitle"));
     setText(".subtitle", tr("subtitle"));
 
-    const navItems = ["navLogin", "navSearch", "navGroups", "navDocuments", "navAdmin", "navPartners"];
+    const navItems = ["navLogin", "navSearch", "navGroups", "navBinRecords", "navDocuments", "navAdmin", "navPartners"];
     document.querySelectorAll("nav a").forEach((link, index) => {
         link.textContent = tr(navItems[index]);
     });
@@ -313,6 +359,19 @@ export function applyStaticTranslations() {
     setText("#search .search-box > p", tr("searchText"));
     setPlaceholder("#binInput", tr("binPlaceholder"));
     setText("#search button", tr("searchButton"));
+
+    setText("#binRecords h2", tr("binRecordsTitle"));
+    setText("#binRecords .bin-records-box > p", tr("binRecordsText"));
+    setText("#binFormTitle", tr("binFormTitleCreate"));
+    setPlaceholder("#binRecordBin", tr("binPlaceholder"));
+    setPlaceholder("#binRecordUrl", tr("binUrlPlaceholder"));
+    setPlaceholder("#binRecordName", tr("binNamePlaceholder"));
+    setPlaceholder("#binRecordAddress", tr("binAddressPlaceholder"));
+    setPlaceholder("#binRecordDirector", tr("binDirectorPlaceholder"));
+    setPlaceholder("#binRecordRegion", tr("binRegionPlaceholder"));
+    setText(".bin-save-button", tr("addBin"));
+    setText(".bin-cancel-button", tr("cancelEdit"));
+    setText("#noBinRecordsMessage", tr("noBinRecords"));
 
     setText("#documents h2", tr("documentsTitle"));
     setText("#documents .documents-box > p", tr("documentsText"));

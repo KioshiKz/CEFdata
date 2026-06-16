@@ -74,6 +74,6 @@ export async function searchBIN() {
         <p><strong>${tr("address")}</strong> ${escapeHtml(record.address)}</p>
         <p><strong>${tr("director")}</strong> ${escapeHtml(record.director)}</p>
         <p><strong>${tr("region")}</strong> ${escapeHtml(record.region)}</p>
-        <p><strong>${tr("source")}</strong> ${escapeHtml(record.sourceLabel)}</p>
+        ${record.url ? `<p><strong>${tr("source")}</strong> <a href="${escapeHtml(record.url)}" target="_blank" rel="noopener noreferrer">${escapeHtml(record.url)}</a></p>` : `<p><strong>${tr("source")}</strong> ${escapeHtml(record.sourceLabel)}</p>`}
     `;
 }

@@ -107,5 +107,30 @@ export const api = {
 
     submissionFileUrl(id, type = "submission") {
         return `/api/submissions/${encodeURIComponent(id)}/file?type=${encodeURIComponent(type)}`;
+    },
+
+    async getBinRecords() {
+        const payload = await request("/api/bin-records");
+        return payload.binRecords || [];
+    },
+
+    async createBinRecord(data) {
+        const payload = await request("/api/bin-records", {
+            method: "POST",
+            body: JSON.stringify(data)
+        });
+        return payload.binRecord;
+    },
+
+    async updateBinRecord(id, patch) {
+        const payload = await request(`/api/bin-records/${encodeURIComponent(id)}`, {
+            method: "PATCH",
+            body: JSON.stringify(patch)
+        });
+        return payload.binRecord;
+    },
+
+    async deleteBinRecord(id) {
+        return request(`/api/bin-records/${encodeURIComponent(id)}`, { method: "DELETE" });
     }
 };

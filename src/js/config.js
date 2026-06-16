@@ -1,5 +1,5 @@
-export const pageSections = ["home", "groups", "search", "documents", "adminPanel", "partners"];
-export const adminSections = new Set(["groups", "adminPanel", "search"]);
+export const pageSections = ["home", "groups", "search", "binRecords", "documents", "adminPanel", "partners"];
+export const adminSections = new Set(["groups", "adminPanel", "search", "binRecords"]);
 
 export const practiceTypeOptions = [
     "Өндірістік оқыту",

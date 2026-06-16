@@ -1,4 +1,5 @@
 import { login, logout, restoreSession } from "./auth.js";
+import { bindBinRecordEvents, cancelEdit, editBinRecord, loadBinRecords, removeBinRecord, saveBinRecord } from "./bin-records.js";
 import { searchBIN } from "./bin-search.js";
 import {
     bindDocumentUploadEvents,
@@ -41,6 +42,7 @@ function setLanguage(language) {
     renderAdminDocuments();
     if (isAdmin()) {
         loadGroups();
+        loadBinRecords();
     }
 }
 
@@ -56,6 +58,7 @@ function bindPageActionButtons() {
     document.querySelector(".login-button")?.addEventListener("click", login);
     document.querySelector(".add-group-button")?.addEventListener("click", addGroup);
     document.querySelector(".bin-search-button")?.addEventListener("click", searchBIN);
+    document.querySelector(".bin-save-button")?.addEventListener("click", saveBinRecord);
 
     document.getElementById("usernameInput")?.addEventListener("keydown", function (event) {
         if (event.key === "Enter") {
@@ -85,14 +88,18 @@ function bindPageActionButtons() {
 function exposeGlobals() {
     Object.assign(window, {
         addGroup,
+        cancelEdit,
         changeSelectedPracticeType,
         downloadFile,
         deleteSubmission,
+        editBinRecord,
         handleFileSelection,
         login,
         logout,
         openSubmissionFile,
+        removeBinRecord,
         removeGroup,
+        saveBinRecord,
         searchBIN,
         selectPractice,
         setLanguage,
@@ -115,6 +122,7 @@ function initApp() {
     bindPageActionButtons();
     bindDocumentUploadEvents();
     bindGroupEvents();
+    bindBinRecordEvents();
     setLanguage(appState.currentLanguage);
     restoreSession();
 }

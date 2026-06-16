@@ -671,3 +671,94 @@ pre {
         flex-direction: column;
     }
 }
+
+.bin-records-box {
+    margin-top: 20px;
+}
+
+.bin-form {
+    margin-top: 20px;
+    padding: 16px;
+    background: #f7f9fc;
+    border: 1px solid #e0e6ef;
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    max-width: 560px;
+}
+
+.bin-form h3 {
+    margin: 0 0 4px;
+}
+
+.bin-form input {
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.bin-form-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.bin-form-actions button {
+    margin-top: 0;
+}
+
+.bin-save-button {
+    background-color: #28a745;
+    border-color: #28a745;
+    color: white;
+}
+
+.bin-cancel-button {
+    background-color: #6c757d;
+    border-color: #6c757d;
+    color: white;
+}
+
+.bin-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+.bin-table th,
+.bin-table td {
+    border: 1px solid #ccc;
+    padding: 10px;
+    text-align: left;
+    vertical-align: middle;
+    word-break: break-word;
+}
+
+.bin-table th {
+    background: #f0f4f9;
+}
+
+.bin-edit-button {
+    background-color: #0066cc;
+    border-color: #0066cc;
+    color: white;
+    margin-right: 6px;
+}
+
+.bin-delete-button {
+    background-color: #dc3545;
+    border-color: #dc3545;
+    color: white;
+}
+
+.inline-message {
+    margin-top: 4px;
+}
+
+.inline-message.error {
+    color: #dc3545;
+}
+
+.inline-message.success {
+    color: #28a745;
+}
+
