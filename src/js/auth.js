@@ -1,5 +1,11 @@
 import { api } from "./api.js";
-import { renderAdminDocuments, renderDocumentUploadList, renderStudentUploadedFiles } from "./documents.js";
+import {
+    renderAdminDocuments,
+    renderDocumentUploadList,
+    renderStudentUploadedFiles,
+    renderTemplateAdminPanel,
+    renderTemplateLinks
+} from "./documents.js";
 import { loadGroups } from "./groups.js";
 import { tr } from "./i18n.js";
 import { refreshNavigationAuthState, showSection } from "./navigation.js";
@@ -32,9 +38,11 @@ export async function login() {
     errorDiv.textContent = "";
 
     loadGroups();
+    renderTemplateLinks();
     renderDocumentUploadList();
     renderStudentUploadedFiles();
     renderAdminDocuments();
+    renderTemplateAdminPanel();
     showSection(isAdmin() ? "groups" : "documents");
 }
 
@@ -48,9 +56,11 @@ export async function restoreSession() {
     setCurrentUser(session);
     setLoggedInUi();
     loadGroups();
+    renderTemplateLinks();
     renderDocumentUploadList();
     renderStudentUploadedFiles();
     renderAdminDocuments();
+    renderTemplateAdminPanel();
     showSection(isAdmin() ? "groups" : "documents");
     return true;
 }

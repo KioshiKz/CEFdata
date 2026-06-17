@@ -72,6 +72,43 @@ export const api = {
         return payload.submissions || [];
     },
 
+    async getTemplates() {
+        const payload = await request("/api/templates");
+        return payload.templates || [];
+    },
+
+    async createTemplate(documentName, file) {
+        const formData = new FormData();
+        formData.append("documentName", documentName);
+        formData.append("file", file);
+        const payload = await request("/api/templates", {
+            method: "POST",
+            body: formData
+        });
+        return payload.template;
+    },
+
+    async updateTemplate(id, { documentName, file }) {
+        const formData = new FormData();
+        formData.append("documentName", documentName);
+        if (file) {
+            formData.append("file", file);
+        }
+        const payload = await request(`/api/templates/${encodeURIComponent(id)}`, {
+            method: "PATCH",
+            body: formData
+        });
+        return payload.template;
+    },
+
+    async deleteTemplate(id) {
+        return request(`/api/templates/${encodeURIComponent(id)}`, { method: "DELETE" });
+    },
+
+    templateFileUrl(id) {
+        return `/api/templates/${encodeURIComponent(id)}/file`;
+    },
+
     async uploadSubmission(documentKey, file) {
         const formData = new FormData();
         formData.append("documentKey", documentKey);

@@ -57,6 +57,27 @@ export const i18n = {
         documentsText: "Төмендегі шаблондарды жүктеп алып, толтырылған нұсқасын PDF форматында қайта жүктей аласыз.",
         templates: "Шаблондар",
         templateNote: "Алдымен DOCX шаблонын жүктеп алыңыз, содан кейін толтырылған құжатты PDF ретінде қайта жүктеңіз.",
+        templateAdminTitle: "Шаблондарды басқару",
+        templateAdminText: "Құжат атауын енгізіп, шаблон файлын тіркеңіз.",
+        templateFormTitleCreate: "Жаңа шаблон қосу",
+        templateFormTitleEdit: "Шаблонды өзгерту",
+        templateNamePlaceholder: "Құжат атауы",
+        addTemplate: "Шаблон қосу",
+        saveTemplate: "Сақтау",
+        editTemplate: "Өзгерту",
+        templateTableName: "Құжат атауы",
+        templateTableFile: "Файл",
+        templateTableUpdated: "Жаңартылды",
+        templateTableAction: "Іс-әрекет",
+        noTemplates: "Әзірге қосымша шаблондар жоқ.",
+        templateNameRequired: "Құжат атауын міндетті түрде енгізіңіз.",
+        templateFileRequired: "Шаблон файлын таңдаңыз.",
+        templateAllowedFile: "Тек DOC, DOCX немесе PDF файл қабылданады.",
+        templateSaved: "Шаблон сақталды.",
+        templateDeleted: "Шаблон жойылды.",
+        templateSaveFailed: "Шаблонды сақтау сәтсіз аяқталды.",
+        templateDeleteFailed: "Шаблонды жою сәтсіз аяқталды.",
+        confirmDeleteTemplate: "Бұл шаблонды жоюға сенімдісіз бе?",
         uploadTitle: "Документтерді жүктеу",
         uploadText: "Қажетті құжат түрін басыңыз, сонда өз компьютеріңіздегі файлдар ашылады. Сол жерден керек PDF документті таңдап жүктейсіз.",
         uploadedFiles: "Жүктелген файлдар",
@@ -180,6 +201,27 @@ export const i18n = {
         documentsText: "Скачайте шаблоны ниже, заполните их и загрузите готовую версию в формате PDF.",
         templates: "Шаблоны",
         templateNote: "Сначала скачайте шаблон DOCX, затем загрузите заполненный документ в формате PDF.",
+        templateAdminTitle: "Управление шаблонами",
+        templateAdminText: "Введите название документа и прикрепите файл шаблона.",
+        templateFormTitleCreate: "Добавить новый шаблон",
+        templateFormTitleEdit: "Изменить шаблон",
+        templateNamePlaceholder: "Название документа",
+        addTemplate: "Добавить шаблон",
+        saveTemplate: "Сохранить",
+        editTemplate: "Изменить",
+        templateTableName: "Название документа",
+        templateTableFile: "Файл",
+        templateTableUpdated: "Обновлено",
+        templateTableAction: "Действие",
+        noTemplates: "Пока дополнительных шаблонов нет.",
+        templateNameRequired: "Поле «Название документа» обязательно.",
+        templateFileRequired: "Выберите файл шаблона.",
+        templateAllowedFile: "Принимаются только файлы DOC, DOCX или PDF.",
+        templateSaved: "Шаблон сохранен.",
+        templateDeleted: "Шаблон удален.",
+        templateSaveFailed: "Не удалось сохранить шаблон.",
+        templateDeleteFailed: "Не удалось удалить шаблон.",
+        confirmDeleteTemplate: "Вы уверены, что хотите удалить этот шаблон?",
         uploadTitle: "Загрузка документов",
         uploadText: "Нажмите на нужный тип документа, выберите PDF-файл на компьютере и загрузите его.",
         uploadedFiles: "Загруженные файлы",
@@ -377,6 +419,17 @@ export function applyStaticTranslations() {
     setText("#documents .documents-box > p", tr("documentsText"));
     setText("#documents h3", tr("templates"));
     setText("#documents .documents-box .note", tr("templateNote"));
+    setText("#templateAdminPanel h4", tr("templateAdminTitle"));
+    setText("#templateAdminPanel > p", tr("templateAdminText"));
+    setText("#templateFormTitle", tr("templateFormTitleCreate"));
+    setPlaceholder("#templateDocumentName", tr("templateNamePlaceholder"));
+    setText(".template-save-button", tr("addTemplate"));
+    setText(".template-cancel-button", tr("cancelEdit"));
+    const templateHeaders = ["templateTableName", "templateTableFile", "templateTableUpdated", "templateTableAction"];
+    document.querySelectorAll(".template-table th").forEach((cell, index) => {
+        cell.textContent = tr(templateHeaders[index]);
+    });
+    setText("#noTemplatesMessage", tr("noTemplates"));
     setText(".upload-panel-title", tr("uploadTitle"));
     setText(".upload-panel-content > p", tr("uploadText"));
     setText(".uploaded-files-box h4", tr("uploadedFiles"));

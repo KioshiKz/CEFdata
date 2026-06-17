@@ -17,6 +17,8 @@ import { appState, isAdmin } from "./state.js";
 import { escapeHtml, setInlineMessage } from "./utils.js";
 
 let uploadEventsBound = false;
+let templateDocuments = [];
+let editingTemplateId = null;
 
 async function readSubmissions() {
     try {
@@ -26,14 +28,19 @@ async function readSubmissions() {
     }
 }
 
-export function renderTemplateLinks() {
-    const list = document.querySelector(".document-list");
-    if (!list) {
-        return;
+async function readTemplates() {
+    try {
+        templateDocuments = await api.getTemplates();
+        return templateDocuments;
+    } catch {
+        templateDocuments = [];
+        return [];
     }
+}
 
+function staticTemplateLinks() {
     const templateWord = appState.currentLanguage === "ru" ? "шаблон" : "шаблоны";
-    list.innerHTML = Object.entries(downloadFileByKey).map(([key, fileName]) => {
+    return Object.entries(downloadFileByKey).map(([key, fileName]) => {
         const fullFileName = `${fileName}_${appState.currentLanguage}.docx`;
         const href = `${templateBasePath}/${fullFileName}`;
         return `
@@ -43,7 +50,63 @@ export function renderTemplateLinks() {
                 </a>
             </li>
         `;
-    }).join("");
+    });
+}
+
+function customTemplateLinks(templates) {
+    return templates.map((template) => `
+        <li>
+            <a href="${api.templateFileUrl(template.id)}" class="template-download-link" data-template-id="${escapeHtml(template.id)}" download>
+                ${escapeHtml(template.documentName)}
+            </a>
+        </li>
+    `);
+}
+
+function uploadDocumentDefinitions(templates = templateDocuments) {
+    return [
+        ...documentDefinitions.map((doc) => ({
+            key: doc.key,
+            title: localizedDocumentName(doc.key)
+        })),
+        ...templates.map((template) => ({
+            key: template.id,
+            title: template.documentName
+        }))
+    ];
+}
+
+function displaySubmissionDocumentName(item) {
+    const documentKey = item.documentKey || item.documentName;
+    if (item.documentName && item.documentName !== documentKey) {
+        return item.documentName;
+    }
+    return localizedDocumentName(documentKey);
+}
+
+function templateFormElements() {
+    return {
+        title: document.getElementById("templateFormTitle"),
+        name: document.getElementById("templateDocumentName"),
+        file: document.getElementById("templateFile"),
+        save: document.querySelector(".template-save-button"),
+        cancel: document.querySelector(".template-cancel-button"),
+        message: document.getElementById("templateFormMessage")
+    };
+}
+
+function isAllowedTemplateFile(file) {
+    return /\.(doc|docx|pdf)$/i.test(file?.name || "");
+}
+
+export async function renderTemplateLinks() {
+    const list = document.querySelector(".document-list");
+    if (!list) {
+        return;
+    }
+
+    const templates = await readTemplates();
+    list.innerHTML = [...staticTemplateLinks(), ...customTemplateLinks(templates)].join("");
 }
 
 export function downloadFile(documentKey) {
@@ -55,16 +118,17 @@ export function downloadFile(documentKey) {
     window.location.href = `${templateBasePath}/${fileName}_${appState.currentLanguage}.docx`;
 }
 
-export function renderDocumentUploadList() {
+export async function renderDocumentUploadList() {
     const container = document.getElementById("documentUploadList");
     if (!container) {
         return;
     }
 
-    container.innerHTML = documentDefinitions.map((doc) => `
+    const templates = await readTemplates();
+    container.innerHTML = uploadDocumentDefinitions(templates).map((doc) => `
         <div class="document-upload-card">
             <div>
-                <h4>${escapeHtml(localizedDocumentName(doc.key))}</h4>
+                <h4>${escapeHtml(doc.title)}</h4>
                 <p>${tr("uploadHint")}</p>
             </div>
             <div class="document-upload-actions">
@@ -213,6 +277,169 @@ export async function deleteSubmission(submissionId) {
     renderAdminDocuments();
 }
 
+export function resetTemplateForm() {
+    const elements = templateFormElements();
+    editingTemplateId = null;
+    if (elements.name) {
+        elements.name.value = "";
+    }
+    if (elements.file) {
+        elements.file.value = "";
+    }
+    if (elements.title) {
+        elements.title.textContent = tr("templateFormTitleCreate");
+    }
+    if (elements.save) {
+        elements.save.textContent = tr("addTemplate");
+        elements.save.disabled = false;
+    }
+    if (elements.cancel) {
+        elements.cancel.style.display = "none";
+    }
+    if (elements.message) {
+        elements.message.textContent = "";
+        elements.message.className = "inline-message";
+    }
+}
+
+export async function renderTemplateAdminPanel() {
+    const panel = document.getElementById("templateAdminPanel");
+    if (!panel) {
+        return;
+    }
+
+    panel.style.display = isAdmin() ? "" : "none";
+    if (!isAdmin()) {
+        return;
+    }
+
+    const templates = await readTemplates();
+    const tbody = document.getElementById("templateTableBody");
+    const emptyMessage = document.getElementById("noTemplatesMessage");
+    if (!tbody || !emptyMessage) {
+        return;
+    }
+
+    emptyMessage.style.display = templates.length ? "none" : "block";
+    tbody.innerHTML = templates.map((template) => `
+        <tr>
+            <td>
+                <a href="${api.templateFileUrl(template.id)}" download>${escapeHtml(template.documentName)}</a>
+            </td>
+            <td>${escapeHtml(template.fileName || template.originalFileName || "")}</td>
+            <td>${formatDateTime(template.updatedAt || template.uploadedAt)}</td>
+            <td>
+                <button type="button" class="template-edit-button" data-template-action="edit" data-template-id="${escapeHtml(template.id)}">${tr("editTemplate")}</button>
+                <button type="button" class="template-delete-button" data-template-action="delete" data-template-id="${escapeHtml(template.id)}">${tr("delete")}</button>
+            </td>
+        </tr>
+    `).join("");
+}
+
+export async function saveTemplateDocument() {
+    if (!isAdmin()) {
+        return;
+    }
+
+    const elements = templateFormElements();
+    const documentName = elements.name?.value.trim() || "";
+    const file = elements.file?.files?.[0] || null;
+
+    if (!documentName) {
+        setInlineMessage(elements.message, tr("templateNameRequired"), true);
+        elements.name?.focus();
+        return;
+    }
+
+    if (!editingTemplateId && !file) {
+        setInlineMessage(elements.message, tr("templateFileRequired"), true);
+        return;
+    }
+
+    if (file && !isAllowedTemplateFile(file)) {
+        setInlineMessage(elements.message, tr("templateAllowedFile"), true);
+        return;
+    }
+
+    if (elements.save) {
+        elements.save.disabled = true;
+    }
+
+    try {
+        if (editingTemplateId) {
+            await api.updateTemplate(editingTemplateId, { documentName, file });
+        } else {
+            await api.createTemplate(documentName, file);
+        }
+        resetTemplateForm();
+        setInlineMessage(templateFormElements().message, tr("templateSaved"), false);
+        await renderTemplateLinks();
+        await renderDocumentUploadList();
+        await renderTemplateAdminPanel();
+    } catch (error) {
+        setInlineMessage(elements.message, error.message || tr("templateSaveFailed"), true);
+    } finally {
+        const currentSaveButton = templateFormElements().save;
+        if (currentSaveButton) {
+            currentSaveButton.disabled = false;
+        }
+    }
+}
+
+export function editTemplateDocument(templateId) {
+    if (!isAdmin()) {
+        return;
+    }
+
+    const template = templateDocuments.find((item) => item.id === templateId);
+    if (!template) {
+        return;
+    }
+
+    const elements = templateFormElements();
+    editingTemplateId = templateId;
+    if (elements.name) {
+        elements.name.value = template.documentName;
+        elements.name.focus();
+    }
+    if (elements.file) {
+        elements.file.value = "";
+    }
+    if (elements.title) {
+        elements.title.textContent = tr("templateFormTitleEdit");
+    }
+    if (elements.save) {
+        elements.save.textContent = tr("saveTemplate");
+    }
+    if (elements.cancel) {
+        elements.cancel.style.display = "";
+    }
+    if (elements.message) {
+        elements.message.textContent = "";
+        elements.message.className = "inline-message";
+    }
+}
+
+export async function deleteTemplateDocument(templateId) {
+    if (!isAdmin() || !confirm(tr("confirmDeleteTemplate"))) {
+        return;
+    }
+
+    const elements = templateFormElements();
+    try {
+        await api.deleteTemplate(templateId);
+        if (editingTemplateId === templateId) {
+            resetTemplateForm();
+        }
+        setInlineMessage(elements.message, tr("templateDeleted"), false);
+        await renderTemplateLinks();
+        await renderDocumentUploadList();
+        await renderTemplateAdminPanel();
+    } catch (error) {
+        setInlineMessage(elements.message, error.message || tr("templateDeleteFailed"), true);
+    }
+}
+
 export async function renderStudentUploadedFiles() {
     const container = document.getElementById("studentUploadedFiles");
     if (!container) {
@@ -226,11 +453,10 @@ export async function renderStudentUploadedFiles() {
     }
 
     container.innerHTML = submissions.map((item) => {
-        const documentKey = item.documentKey || item.documentName;
         return `
             <div class="student-file-card">
                 <div>
-                    <h5>${escapeHtml(localizedDocumentName(documentKey))}</h5>
+                    <h5>${escapeHtml(displaySubmissionDocumentName(item))}</h5>
                     <p><strong>${tr("file")}</strong> ${escapeHtml(item.fileName)}</p>
                     <p><strong>${tr("uploadedAt")}</strong> ${formatDateTime(item.uploadedAt)}</p>
                     <p><strong>${tr("status")}</strong> ${escapeHtml(localizedStatus(item.status))}</p>
@@ -263,12 +489,11 @@ export async function renderAdminDocuments() {
 
     const statuses = Object.keys(statusLabels);
     container.innerHTML = submissions.map((item) => {
-        const documentKey = item.documentKey || item.documentName;
         return `
             <div class="admin-document-card">
                 <div class="admin-document-header">
                     <div>
-                        <h4>${escapeHtml(localizedDocumentName(documentKey))}</h4>
+                        <h4>${escapeHtml(displaySubmissionDocumentName(item))}</h4>
                         <p><strong>${tr("file")}</strong> ${escapeHtml(item.fileName)}</p>
                         <p><strong>${tr("originalName")}</strong> ${escapeHtml(item.originalFileName || item.fileName)}</p>
                         <p><strong>${tr("uploadedAt")}</strong> ${formatDateTime(item.uploadedAt)}</p>
@@ -370,6 +595,31 @@ export function bindDocumentUploadEvents() {
     });
 
     document.addEventListener("click", function (event) {
+        const templateSaveButton = event.target.closest(".template-save-button");
+        if (templateSaveButton) {
+            saveTemplateDocument();
+            return;
+        }
+
+        const templateCancelButton = event.target.closest(".template-cancel-button");
+        if (templateCancelButton) {
+            resetTemplateForm();
+            return;
+        }
+
+        const templateActionButton = event.target.closest("[data-template-action]");
+        if (templateActionButton) {
+            const templateId = templateActionButton.dataset.templateId;
+            if (templateActionButton.dataset.templateAction === "edit") {
+                editTemplateDocument(templateId);
+                return;
+            }
+            if (templateActionButton.dataset.templateAction === "delete") {
+                deleteTemplateDocument(templateId);
+                return;
+            }
+        }
+
         const actionButton = event.target.closest("[data-submission-action]");
         if (!actionButton) {
             return;
@@ -384,5 +634,14 @@ export function bindDocumentUploadEvents() {
         if (actionButton.dataset.submissionAction === "upload-report") {
             uploadAdminReport(submissionId);
         }
+    });
+
+    document.addEventListener("keydown", function (event) {
+        if (event.key !== "Enter" || event.target.id !== "templateDocumentName") {
+            return;
+        }
+
+        event.preventDefault();
+        saveTemplateDocument();
     });
 }

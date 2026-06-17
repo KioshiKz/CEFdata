@@ -42,6 +42,7 @@ module.exports = {
     maxUploadBytes: 25 * 1024 * 1024,
     mimeTypes: {
         ".css": "text/css; charset=utf-8",
+        ".doc": "application/msword",
         ".docx": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
         ".html": "text/html; charset=utf-8",
         ".js": "text/javascript; charset=utf-8",

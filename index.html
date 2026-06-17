@@ -119,6 +119,36 @@
                         <h3>Шаблондар</h3>
                         <ul class="document-list"></ul>
                         <p class="note">Алдымен DOCX шаблонын жүктеп алыңыз, содан кейін толтырылған құжатты PDF ретінде қайта жүктеңіз.</p>
+
+                        <div class="template-admin-section" id="templateAdminPanel" style="display: none;">
+                            <h4>Шаблондарды басқару</h4>
+                            <p>Құжат атауын енгізіп, шаблон файлын тіркеңіз.</p>
+                            <div class="template-form">
+                                <h5 id="templateFormTitle">Жаңа шаблон қосу</h5>
+                                <input type="text" id="templateDocumentName" placeholder="Құжат атауы" required>
+                                <input type="file" id="templateFile" class="template-file-input" accept=".doc,.docx,.pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/pdf">
+                                <div class="template-form-actions">
+                                    <button type="button" class="template-save-button">Шаблон қосу</button>
+                                    <button type="button" class="template-cancel-button" style="display: none;">Бас тарту</button>
+                                </div>
+                                <div id="templateFormMessage" class="inline-message"></div>
+                            </div>
+
+                            <div class="template-table-wrap">
+                                <table class="template-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Құжат атауы</th>
+                                            <th>Файл</th>
+                                            <th>Жаңартылды</th>
+                                            <th>Іс-әрекет</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="templateTableBody"></tbody>
+                                </table>
+                            </div>
+                            <p id="noTemplatesMessage" class="note">Әзірге қосымша шаблондар жоқ.</p>
+                        </div>
                     </div>
                 </div>
 

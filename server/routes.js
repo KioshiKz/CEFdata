@@ -1,4 +1,5 @@
 const fs = require("fs/promises");
+const path = require("path");
 const {
     clearSessionCookie,
     createSession,
@@ -14,20 +15,26 @@ const {
     addGroup,
     addBinRecord,
     addSubmission,
+    addTemplate,
     attachReport,
     binRecordExists,
     deleteBinRecord,
     deleteGroup,
     deleteSubmission,
+    deleteTemplate,
     findBinRecord,
     getSubmissionFile,
+    getTemplateFile,
     listBinRecords,
     listGroups,
     listSubmissions,
+    listTemplates,
+    templateExists,
     updateBinRecord,
     updateGroup,
     updatePractice,
-    updateSubmission
+    updateSubmission,
+    updateTemplate
 } = require("./data-store");
 const { readJsonBody, sendError, sendFile, sendJson } = require("./http-utils");
 const { parseMultipart } = require("./multipart");
@@ -54,6 +61,20 @@ function assertPdfFile(file) {
     const isPdf = file.mimeType === "application/pdf" || file.filename.toLowerCase().endsWith(".pdf");
     if (!isPdf) {
         return "Only PDF files are accepted";
+    }
+
+    return "";
+}
+
+function assertTemplateFile(file) {
+    if (!file) {
+        return "Template file is required";
+    }
+
+    const allowedExtensions = new Set([".doc", ".docx", ".pdf"]);
+    const extension = path.extname(file.filename || "").toLowerCase();
+    if (!allowedExtensions.has(extension)) {
+        return "Only DOC, DOCX, and PDF template files are accepted";
     }
 
     return "";
@@ -95,6 +116,89 @@ async function handleAuthRoutes(request, response, url) {
             role: session?.role || null,
             username: session?.username || null
         });
+        return true;
+    }
+
+    return false;
+}
+
+async function handleTemplateRoutes(request, response, url) {
+    if (url.pathname === "/api/templates" && request.method === "GET") {
+        if (!requireAuth(request, response)) return true;
+        sendJson(response, 200, { templates: await listTemplates() });
+        return true;
+    }
+
+    if (url.pathname === "/api/templates" && request.method === "POST") {
+        if (!requireAdmin(request, response)) return true;
+        const { fields, files } = await parseMultipart(request);
+        const documentName = String(fields.documentName || "").trim();
+        if (!documentName) {
+            sendError(response, 400, "Document name is required");
+            return true;
+        }
+
+        const fileError = assertTemplateFile(files.file);
+        if (fileError) {
+            sendError(response, 400, fileError);
+            return true;
+        }
+
+        sendJson(response, 201, { template: await addTemplate({ documentName, file: files.file }) });
+        return true;
+    }
+
+    const templateMatch = routePattern(url.pathname, /^\/api\/templates\/(?<id>[^/]+)$/);
+    if (templateMatch && request.method === "PATCH") {
+        if (!requireAdmin(request, response)) return true;
+        const { fields, files } = await parseMultipart(request);
+        const patch = {};
+
+        if (Object.prototype.hasOwnProperty.call(fields, "documentName")) {
+            patch.documentName = String(fields.documentName || "").trim();
+            if (!patch.documentName) {
+                sendError(response, 400, "Document name is required");
+                return true;
+            }
+        }
+
+        if (files.file) {
+            const fileError = assertTemplateFile(files.file);
+            if (fileError) {
+                sendError(response, 400, fileError);
+                return true;
+            }
+            patch.file = files.file;
+        }
+
+        const template = await updateTemplate(templateMatch.id, patch);
+        if (!template) {
+            sendError(response, 404, "Template not found");
+            return true;
+        }
+        sendJson(response, 200, { template });
+        return true;
+    }
+
+    if (templateMatch && request.method === "DELETE") {
+        if (!requireAdmin(request, response)) return true;
+        if (!await deleteTemplate(templateMatch.id)) {
+            sendError(response, 404, "Template not found");
+            return true;
+        }
+        sendJson(response, 200, { ok: true });
+        return true;
+    }
+
+    const fileMatch = routePattern(url.pathname, /^\/api\/templates\/(?<id>[^/]+)\/file$/);
+    if (fileMatch && request.method === "GET") {
+        if (!requireAuth(request, response)) return true;
+        const file = await getTemplateFile(fileMatch.id);
+        if (!file) {
+            sendError(response, 404, "Template file not found");
+            return true;
+        }
+        await sendFile(response, file.path, file.fileName);
         return true;
     }
 
@@ -170,7 +274,7 @@ async function handleSubmissionRoutes(request, response, url) {
         if (!requireAuth(request, response)) return true;
         const { fields, files } = await parseMultipart(request);
         const documentKey = String(fields.documentKey || "");
-        if (!documentKeys.has(documentKey)) {
+        if (!documentKeys.has(documentKey) && !await templateExists(documentKey)) {
             sendError(response, 400, "Unknown document type");
             return true;
         }
@@ -389,6 +493,7 @@ async function handleApi(request, response, url) {
 
     if (
         await handleAuthRoutes(request, response, url) ||
+        await handleTemplateRoutes(request, response, url) ||
         await handleGroupRoutes(request, response, url) ||
         await handleSubmissionRoutes(request, response, url) ||
         await handleBinRecordRoutes(request, response, url) ||

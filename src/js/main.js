@@ -10,7 +10,10 @@ import {
     renderAdminDocuments,
     renderDocumentUploadList,
     renderStudentUploadedFiles,
+    renderTemplateAdminPanel,
     renderTemplateLinks,
+    resetTemplateForm,
+    saveTemplateDocument,
     updateSubmissionComment,
     updateSubmissionStatus,
     uploadAdminReport,
@@ -40,6 +43,7 @@ function setLanguage(language) {
     renderDocumentUploadList();
     renderStudentUploadedFiles();
     renderAdminDocuments();
+    renderTemplateAdminPanel();
     if (isAdmin()) {
         loadGroups();
         loadBinRecords();
@@ -99,7 +103,9 @@ function exposeGlobals() {
         openSubmissionFile,
         removeBinRecord,
         removeGroup,
+        resetTemplateForm,
         saveBinRecord,
+        saveTemplateDocument,
         searchBIN,
         selectPractice,
         setLanguage,
